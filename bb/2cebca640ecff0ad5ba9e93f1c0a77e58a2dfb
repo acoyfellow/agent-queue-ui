@@ -1,0 +1,29 @@
+bun.lock
+  s_980221f942959f::t_8d3baace1018e2 7-9,32-43,132-133,140-141,182-185,188-189,198-199
+experiments/iteration-001/src/app.css
+  s_952b167abec97a::t_dfa3cfb834cd8c 5-6,28,36-79,82-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "bb2cebca640ecff0ad5ba9e93f1c0a77e58a2dfb",
+  "prompts": {},
+  "sessions": {
+    "s_952b167abec97a": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fd391-aa11-7719-9c9c-d9bc68c3f904",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jordan Coeyman <jcoeyman@cloudflare.com>"
+    },
+    "s_980221f942959f": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a04dae-e52e-7b57-ad8e-7e48376654a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jordan Coeyman <jcoeyman@cloudflare.com>"
+    }
+  }
+}
