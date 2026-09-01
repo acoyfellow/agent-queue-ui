@@ -1,35 +1,36 @@
-# Agent Queue UI
+# Visual Prompt Routing Lab
 
-Many people talking to one agent quickly becomes ambiguous: nobody knows whose turn is next, what the agent is handling, or whether a message was lost.
+When several people direct one agent, the product must decide more than who is next. It must interpret how prompts relate, decide when work is eligible, allocate attention, expose its reasoning, and let the room intervene.
 
-**Bet:** a shared full-screen chat can make one agent's active turn and pending human queue understandable without turning conversation into a ticket tracker.
+This notebook investigates that prompt-routing layer through runnable visual patterns. Agent output remains the deterministic response `Ok`, keeping routing behavior as the independent variable.
 
 ## Falsifiable claim
 
-A participant can identify what the agent is handling now, what is next, and where their own message sits within five seconds of opening the UI.
+A participant can identify what the agent is handling, why it was selected, what is likely to happen next, and where their own intent sits within five seconds.
 
-## Run iteration 1
+## Run the lab
 
 ```sh
 bun install
 bun run dev
 ```
 
-Open <http://localhost:5174>.
+Open <http://localhost:5174>. Send a prompt as any participant or select another routing pattern. Empty runs receive a fresh controlled sample.
 
-Send a message as any participant. The frontend queues it, promotes it to active work, and returns `Ok`. There is no backend or model.
+## Research materials
 
-## Notebook
-
-- `status.json` is the claim ledger.
-- `experiments/iteration-001/` is the runnable Svelte experiment.
-- `receipts/` contains the pre-build receipt-schema review.
+- `RESEARCH_PROMPT.md` is the reusable pattern-discovery brief.
+- `EVALUATION.md` defines scenarios, event traces, and measurable dimensions.
+- `STRATEGIES.md` maps the first 20 implemented patterns.
+- `status.json` separates proven, unproven, and disproven claims.
+- `experiments/iteration-001/` contains the runnable Svelte experiment.
+- `receipts/` contains validation evidence and raw E2E observations.
 - `findings.md` records what each iteration teaches us.
 
 ## Limits
 
-This experiment has no authentication, persistence, networking, model, or production authority. Refreshing resets everything. Queue timing is simulated.
+This experiment has no authentication, persistence, networking, model, or production authority. Refreshing resets everything. Timing is simulated. The current E2E evidence proves scheduling behavior, not human comprehension, fairness, or trust.
 
-## What this makes possible next
+## Next research boundary
 
-The stable message and queue vocabulary lets later iterations compare alternate queue presentations without rebuilding the chat substrate.
+The initial catalog is strongest at ordering, batching, and concurrency. The next experiments should investigate semantic routing: corrections that supersede prior intent, prompts that merge or branch, dependencies that prevent unsafe parallelism, contradictory requests, participant intervention, and visible routing explanations.

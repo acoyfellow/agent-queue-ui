@@ -310,7 +310,7 @@
           <section class="inline-queue inline-queue-{strategy.layout} ml-11 border-y border-[#d9d9df] py-3">
             <div class="flex items-center justify-between gap-4">
               <div>
-                <h2 class="text-sm font-medium">Agent queue</h2>
+                <h2 class="text-sm font-medium">Prompt routing</h2>
                 <p class="text-sm text-[#6a6f78]">{strategy.summary}</p>
               </div>
               <span class="font-mono text-xs text-[#6a6f78]">{activeTurns.length} active · {waitingTurns.length} waiting</span>
@@ -382,7 +382,7 @@
           </label>
 
           <div class="flex items-center gap-2">
-            <label class="sr-only" for="strategy">Queue strategy</label>
+            <label class="sr-only" for="strategy">Routing pattern</label>
             <select id="strategy" bind:value={strategyId} on:change={changeStrategy} class="max-w-48 cursor-pointer rounded-md bg-[#f1f1f3] px-2 py-1.5 text-sm font-medium text-[#1f2328]">
               {#each strategyCategories as category}
                 <optgroup label={category}>
