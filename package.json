@@ -8,6 +8,9 @@
     "build": "vite build experiments/iteration-001",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
+  "dependencies": {
+    "effect": "4.0.0-rc.112"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "latest",
     "@tailwindcss/vite": "latest",

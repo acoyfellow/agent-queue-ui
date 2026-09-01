@@ -7,9 +7,10 @@
 
 ## Observed
 
-- The app renders as a full-screen shared conversation with a persistent queue rail at desktop width.
+- The app renders as a full-screen shared conversation with the queue inline in the transcript.
 - Sending `Can everyone see my place in line?` as Maya creates one active queue item with Maya's identity and prompt.
-- The active state is visible in both the transcript and queue rail.
+- The active state is visible beside the conversation rather than in a separate sidebar.
+- The queue strategy selector drives real Effect v4 sequential, bounded-two, and unbounded `Effect.forEach` concurrency.
 - The frontend appends the deterministic agent response `Ok` and clears the queue item.
 - `bun run check` reports zero errors and warnings.
 - `bun run build` completes successfully.
