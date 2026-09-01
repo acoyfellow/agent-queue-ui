@@ -1,0 +1,31 @@
+experiments/iteration-001/src/App.svelte
+  s_952b167abec97a::t_af18f4eb945447 3-11,50-52,55-59,118-123,128,141,152-153,156,164,172-173,178-179,183-184,260-268,310,320,323,333,344-349,386-392
+receipts/strategy-e2e.md
+  s_952b167abec97a::t_44549495717103 1-23
+receipts/strategy-e2e.tsv
+  s_980221f942959f::t_e78e8f84e9fa47 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fdf00638bb65b6c07afcacd1fab7af1f219ec4aa",
+  "prompts": {},
+  "sessions": {
+    "s_952b167abec97a": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fd391-aa11-7719-9c9c-d9bc68c3f904",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jordan Coeyman <jcoeyman@cloudflare.com>"
+    },
+    "s_980221f942959f": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a04dae-e52e-7b57-ad8e-7e48376654a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jordan Coeyman <jcoeyman@cloudflare.com>"
+    }
+  }
+}
