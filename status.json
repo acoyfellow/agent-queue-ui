@@ -1,0 +1,20 @@
+{
+  "state": "active",
+  "iteration": 1,
+  "northStar": "Find a calm shared-chat interface where many people can understand one agent's attention and queue.",
+  "constraint": "Pure frontend; the agent returns Ok for every turn.",
+  "falsifiable": "A participant can identify active work, next work, and their own queue position within five seconds.",
+  "proven": [],
+  "unproven": [
+    {
+      "claim": "The split conversation and queue rail makes agent attention legible within five seconds.",
+      "receipt": null
+    }
+  ],
+  "disproven": [],
+  "openQuestions": [
+    "Should queue order live beside the transcript or inside it?",
+    "Should rapid messages from one person collapse into one turn?",
+    "How much agent state belongs in the header versus the queue?"
+  ]
+}

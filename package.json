@@ -1,0 +1,20 @@
+{
+  "name": "agent-queue-ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite experiments/iteration-001 --host 127.0.0.1 --port 5174",
+    "build": "vite build experiments/iteration-001",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "latest",
+    "@tailwindcss/vite": "latest",
+    "svelte": "latest",
+    "svelte-check": "latest",
+    "tailwindcss": "latest",
+    "typescript": "~5.9.0",
+    "vite": "latest"
+  }
+}
