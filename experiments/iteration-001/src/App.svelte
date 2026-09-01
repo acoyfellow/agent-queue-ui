@@ -1,6 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { QueueRuntime, type Parallelism } from './queueRuntime';
+  import { QueueRuntime } from './queueRuntime';
+  import {
+    planTurns,
+    strategies,
+    strategyById,
+    strategyCategories,
+    type Strategy,
+    type StrategyId,
+  } from './strategies';
 
   type Participant = {
     id: string;
@@ -25,15 +33,6 @@
     createdAt: string;
   };
 
-  type StrategyId = 'sequential' | 'bounded' | 'unbounded';
-
-  type Strategy = {
-    id: StrategyId;
-    label: string;
-    summary: string;
-    concurrency: Parallelism;
-  };
-
   const participants: Participant[] = [
     { id: 'maya', name: 'Maya Chen', initials: 'MC', color: '#f6821f' },
     { id: 'nora', name: 'Nora Singh', initials: 'NS', color: '#2f7f9f' },
@@ -48,29 +47,16 @@
     color: '#f6821f',
   };
 
-  const strategies: Strategy[] = [
-    {
-      id: 'sequential',
-      label: 'Sequential',
-      summary: 'One request at a time, in arrival order',
-      concurrency: 1,
-    },
-    {
-      id: 'bounded',
-      label: 'Parallel ×2',
-      summary: 'Two requests run at once',
-      concurrency: 2,
-    },
-    {
-      id: 'unbounded',
-      label: 'Parallel burst',
-      summary: 'Every waiting request starts immediately',
-      concurrency: 'unbounded',
-    },
-  ];
+  const searchParams = new URLSearchParams(window.location.search);
+  const e2eMode = searchParams.has('e2e');
+  const requestedStrategy = searchParams.get('strategy');
 
   let currentParticipantId = 'maya';
-  let strategyId: StrategyId = 'sequential';
+  let strategyId: StrategyId = strategies.some((strategy) => strategy.id === requestedStrategy)
+    ? (requestedStrategy as StrategyId)
+    : 'fifo';
+  let servedAuthors: string[] = [];
+  let peakActive = 0;
   let draft = '';
   let feed: HTMLDivElement;
 
@@ -129,11 +115,17 @@
   ];
 
   const runtime = new QueueRuntime<QueueTurn>({
-    pending: () => queue.filter((turn) => turn.status === 'queued'),
+    pending: () =>
+      planTurns(
+        queue.filter((turn) => turn.status === 'queued'),
+        selectedStrategy(),
+        servedAuthors,
+      ),
     activate: (turn) => {
       queue = queue.map((candidate) =>
         candidate.id === turn.id ? { ...candidate, status: 'active' } : candidate,
       );
+      peakActive = Math.max(peakActive, queue.filter((candidate) => candidate.status === 'active').length);
     },
     complete: (turn) => {
       messages = [
@@ -146,6 +138,7 @@
           turnId: turn.id,
         },
       ];
+      servedAuthors = [...servedAuthors, turn.authorId];
       queue = queue.filter((candidate) => candidate.id !== turn.id);
       window.setTimeout(scrollToLatest, 0);
     },
@@ -156,10 +149,11 @@
 
   $: activeTurns = queue.filter((turn) => turn.status === 'active');
   $: waitingTurns = queue.filter((turn) => turn.status === 'queued');
-  $: strategy = strategies.find((candidate) => candidate.id === strategyId) ?? strategies[0];
+  $: completedCount = messages.filter((message) => message.authorId === agent.id && message.text === 'Ok').length;
+  $: strategy = strategyById(strategyId);
 
   onMount(() => {
-    window.setTimeout(runQueue, 900);
+    window.setTimeout(runQueue, e2eMode ? 10 : 900);
   });
 
   function participant(id: string): Participant {
@@ -167,7 +161,7 @@
   }
 
   function selectedStrategy(): Strategy {
-    return strategies.find((candidate) => candidate.id === strategyId) ?? strategies[0];
+    return strategyById(strategyId);
   }
 
   function clock(): string {
@@ -175,15 +169,19 @@
   }
 
   function runQueue(): void {
-    runtime.run(selectedStrategy().concurrency);
+    const selected = selectedStrategy();
+    runtime.run(selected.concurrency, e2eMode ? 80 : selected.durationMs);
   }
 
   async function changeStrategy(): Promise<void> {
     if (queue.length === 0) addStrategySample();
-    await runtime.restart(selectedStrategy().concurrency);
+    const selected = selectedStrategy();
+    await runtime.restart(selected.concurrency, e2eMode ? 80 : selected.durationMs);
   }
 
   function addStrategySample(): void {
+    servedAuthors = [];
+    peakActive = 0;
     const samples = [
       ['nora', 'Compare the strongest two options.'],
       ['theo', 'Turn the decision into a launch checklist.'],
@@ -259,7 +257,15 @@
   <meta name="description" content="A shared agent queue UI experiment" />
 </svelte:head>
 
-<main class="flex h-full min-h-0 flex-col bg-[#f7f7f8] text-[#1f2328]">
+<main
+  class="flex h-full min-h-0 flex-col bg-[#f7f7f8] text-[#1f2328]"
+  data-strategy={strategy.id}
+  data-active={activeTurns.length}
+  data-waiting={waitingTurns.length}
+  data-completed={completedCount}
+  data-peak-active={peakActive}
+  data-completion-order={servedAuthors.join(',')}
+>
   <header class="flex h-16 shrink-0 items-center justify-between border-b border-[#d9d9df] bg-white px-5 md:px-8">
     <div class="flex min-w-0 items-center gap-3">
       <div class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#f6821f] text-sm font-semibold text-white">A</div>
@@ -301,7 +307,7 @@
         {/each}
 
         {#if queue.length > 0}
-          <section class="inline-queue inline-queue-{strategy.id} ml-11 border-y border-[#d9d9df] py-3">
+          <section class="inline-queue inline-queue-{strategy.layout} ml-11 border-y border-[#d9d9df] py-3">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <h2 class="text-sm font-medium">Agent queue</h2>
@@ -311,10 +317,10 @@
             </div>
 
             {#if activeTurns.length > 0}
-              <div class="inline-active inline-active-{strategy.id} mt-3">
+              <div class="inline-active inline-active-{strategy.layout} mt-3">
                 {#each activeTurns as turn, index (turn.id)}
                   {@const activeAuthor = participant(turn.authorId)}
-                  <div class="active-turn active-turn-{strategy.id} flex min-w-0 items-center gap-2 rounded-lg bg-[#fff4eb] px-3 py-2 ring-1 ring-[#f7c69f]" style:--lane={index}>
+                  <div class="active-turn active-turn-{strategy.animation} flex min-w-0 items-center gap-2 rounded-lg bg-[#fff4eb] px-3 py-2 ring-1 ring-[#f7c69f]" style:--lane={index}>
                     <span class="size-2 shrink-0 animate-pulse rounded-full bg-[#f6821f]"></span>
                     <span class="shrink-0 text-sm font-medium">{activeAuthor.name}</span>
                     <span class="truncate text-sm text-[#6a6f78]">{turn.prompt}</span>
@@ -324,7 +330,7 @@
             {/if}
 
             {#if waitingTurns.length > 0}
-              <ol class="mt-2 space-y-1">
+              <ol class="waiting-list waiting-list-{strategy.layout} mt-2 space-y-1">
                 {#each waitingTurns as turn, index (turn.id)}
                   {@const author = participant(turn.authorId)}
                   <li class="flex items-center gap-2 py-1 text-sm text-[#6a6f78]">
@@ -335,6 +341,12 @@
                 {/each}
               </ol>
             {/if}
+
+            <dl class="mt-3 grid gap-x-4 gap-y-1 border-t border-[#e3e3e7] pt-3 text-sm text-[#6a6f78] md:grid-cols-3">
+              <div><dt class="inline font-medium text-[#42474f]">Good for:</dt> <dd class="inline">{strategy.goodFor}</dd></div>
+              <div><dt class="inline font-medium text-[#42474f]">Tradeoff:</dt> <dd class="inline">{strategy.tradeoff}</dd></div>
+              <div><dt class="inline font-medium text-[#42474f]">Different:</dt> <dd class="inline">{strategy.difference}</dd></div>
+            </dl>
           </section>
         {/if}
 
@@ -371,9 +383,13 @@
 
           <div class="flex items-center gap-2">
             <label class="sr-only" for="strategy">Queue strategy</label>
-            <select id="strategy" bind:value={strategyId} on:change={changeStrategy} class="cursor-pointer rounded-md bg-[#f1f1f3] px-2 py-1.5 text-sm font-medium text-[#1f2328]">
-              {#each strategies as option}
-                <option value={option.id}>{option.label}</option>
+            <select id="strategy" bind:value={strategyId} on:change={changeStrategy} class="max-w-48 cursor-pointer rounded-md bg-[#f1f1f3] px-2 py-1.5 text-sm font-medium text-[#1f2328]">
+              {#each strategyCategories as category}
+                <optgroup label={category}>
+                  {#each strategies.filter((option) => option.category === category) as option}
+                    <option value={option.id}>{option.label}</option>
+                  {/each}
+                </optgroup>
               {/each}
             </select>
             <button on:click={send} disabled={!draft.trim()} class="rounded-md bg-[#f6821f] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#d96f15] disabled:cursor-not-allowed disabled:opacity-40">

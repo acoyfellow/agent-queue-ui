@@ -38,32 +38,83 @@ select:focus-visible {
   gap: 0.5rem;
 }
 
-.inline-active-bounded {
+.inline-active-line,
+.inline-active-stack,
+.inline-active-compact {
+  grid-template-columns: 1fr;
+}
+
+.inline-active-stack {
+  gap: 0.25rem;
+  padding-left: 0.5rem;
+}
+
+.inline-active-lanes {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.inline-active-unbounded {
+.inline-active-grid,
+.inline-active-wave {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-.active-turn {
-  animation: queue-enter 180ms ease-out both;
-  animation-delay: calc(var(--lane) * 50ms);
+.inline-active-wave {
+  border-left: 3px solid #f6821f;
+  padding-left: 0.75rem;
 }
 
-.active-turn-bounded {
-  background: #eef8f5;
-  box-shadow: inset 2px 0 #23866b;
+.inline-active-compact .active-turn {
+  padding-block: 0.375rem;
 }
 
-.active-turn-unbounded {
-  background: #eef6fa;
-  box-shadow: inset 2px 0 #2f7f9f;
+.active-turn-slide {
+  animation: queue-slide 180ms ease-out both;
 }
 
-@keyframes queue-enter {
+.active-turn-fade {
+  animation: queue-fade 220ms ease-out both;
+}
+
+.active-turn-pop {
+  animation: queue-pop 200ms ease-out both;
+}
+
+.active-turn-stagger {
+  animation: queue-slide 220ms ease-out both;
+  animation-delay: calc(var(--lane) * 80ms);
+}
+
+.active-turn-pulse {
+  animation: queue-pulse 900ms ease-in-out infinite alternate;
+  animation-delay: calc(var(--lane) * 90ms);
+}
+
+.active-turn-none {
+  animation: none;
+}
+
+.waiting-list-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+}
+
+.waiting-list-compact li {
+  max-width: 260px;
+}
+
+.waiting-list-stack li {
+  padding-left: 0.5rem;
+}
+
+.waiting-list-wave li {
+  border-left: 3px solid #d9d9df;
+  padding-left: 0.75rem;
+}
+
+@keyframes queue-slide {
   from {
-    opacity: 0;
+    opacity: 0.75;
     transform: translateY(4px);
   }
   to {
@@ -72,9 +123,39 @@ select:focus-visible {
   }
 }
 
+@keyframes queue-fade {
+  from {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes queue-pop {
+  from {
+    opacity: 0.75;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes queue-pulse {
+  from {
+    background: #fff4eb;
+  }
+  to {
+    background: #fffaf5;
+  }
+}
+
 @media (max-width: 640px) {
-  .inline-active-bounded,
-  .inline-active-unbounded {
+  .inline-active-lanes,
+  .inline-active-grid,
+  .inline-active-wave {
     grid-template-columns: 1fr;
   }
 }

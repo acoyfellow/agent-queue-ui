@@ -1,20 +1,39 @@
 {
   "state": "active",
-  "iteration": 1,
+  "iteration": 2,
   "northStar": "Find a calm shared-chat interface where many people can understand one agent's attention and queue.",
   "constraint": "Pure frontend; the agent returns Ok for every turn.",
   "falsifiable": "A participant can identify active work, next work, and their own queue position within five seconds.",
-  "proven": [],
+  "proven": [
+    {
+      "claim": "All 20 policies render and complete every seeded request without duplicate responses.",
+      "receipt": "receipts/strategy-e2e.md"
+    },
+    {
+      "claim": "Observed peak active work matches sequential, bounded, and unbounded Effect concurrency.",
+      "receipt": "receipts/strategy-e2e.tsv"
+    }
+  ],
   "unproven": [
     {
-      "claim": "The split conversation and queue rail makes agent attention legible within five seconds.",
+      "claim": "People can understand and trust each strategy without knowing its implementation.",
+      "receipt": null
+    },
+    {
+      "claim": "The good-for and tradeoff labels predict how each policy feels in a real shared room.",
       "receipt": null
     }
   ],
-  "disproven": [],
+  "disproven": [
+    {
+      "claim": "A persistent queue sidebar is necessary to make agent attention visible.",
+      "receipt": "receipts/iteration-001.md"
+    }
+  ],
   "openQuestions": [
-    "Should queue order live beside the transcript or inside it?",
-    "Should rapid messages from one person collapse into one turn?",
-    "How much agent state belongs in the header versus the queue?"
+    "Do people prefer continuously refilled lanes or explicit batch barriers?",
+    "Is role priority or identity rotation perceived as fairer in facilitated rooms?",
+    "When does motion clarify concurrency, and when does it become noise?",
+    "Should superseded requests remain visible or collapse into the newest request?"
   ]
 }
